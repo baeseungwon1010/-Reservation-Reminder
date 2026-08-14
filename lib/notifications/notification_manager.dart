@@ -26,8 +26,8 @@ class NotificationManager {
 
     tzdata.initializeTimeZones();
     try {
-      final localName = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(localName));
+      final localZone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(localZone.identifier));
     } catch (e) {
       // 시간대 조회 실패 시 UTC 로 폴백(계획서 16장: 기기 시간 신뢰가 원칙).
       debugPrint('Timezone 초기화 실패, UTC 사용: $e');

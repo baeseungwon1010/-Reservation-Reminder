@@ -41,6 +41,10 @@ ios/Podfile.lock
 # macOS
 .DS_Store
 
+# 빌드 산출물 (git 대신 릴리스/직접 전달)
+*.apk
+*.aab
+
 # 기타
 *.log
 Zone.Identifier

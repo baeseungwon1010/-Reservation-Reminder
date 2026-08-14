@@ -25,7 +25,7 @@ dependencies:
   # 로컬 알림
   flutter_local_notifications: ^17.1.2
   timezone: ^0.9.3
-  flutter_timezone: ^1.0.8
+  flutter_timezone: ^5.1.0
 
   # 달력 UI
   table_calendar: ^3.1.1
