@@ -1,0 +1,47 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+pubspec.lock
+coverage/
+
+# 생성 파일 (build_runner) — 로컬에서 생성
+*.g.dart
+*.freezed.dart
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+
+# Android
+android/.gradle/
+android/local.properties
+android/key.properties
+android/app/*.jks
+**/android/**/gradle-wrapper.jar
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+# iOS
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Pods/
+ios/.symlinks/
+ios/Podfile.lock
+**/ios/**/*.mode1v3
+**/ios/**/*.pbxuser
+
+# macOS
+.DS_Store
+
+# 기타
+*.log
+Zone.Identifier
+*:Zone.Identifier

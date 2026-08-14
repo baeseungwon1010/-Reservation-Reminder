@@ -1,0 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+import 'app.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // 한국어 날짜 포맷(요일 등) 초기화.
+  await initializeDateFormatting('ko_KR', null);
+  runApp(
+    const ProviderScope(
+      child: ReservationReminderApp(),
+    ),
+  );
+}
