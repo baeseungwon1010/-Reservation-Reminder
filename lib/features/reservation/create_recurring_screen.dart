@@ -95,7 +95,7 @@ class _CreateRecurringScreenState
         Text('시설', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         DropdownButtonFormField<int>(
-          value: _facilityId,
+          initialValue: _facilityId,
           items: facilities
               .map((f) => DropdownMenuItem(
                     value: f.id,

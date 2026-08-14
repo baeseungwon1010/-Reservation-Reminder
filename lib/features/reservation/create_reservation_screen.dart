@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers.dart';
-import '../../application/reservation_service.dart';
 import '../../core/utils/date_utils.dart';
 import '../../core/utils/formatting.dart';
 import '../../domain/models/enums.dart';
@@ -83,7 +82,7 @@ class _CreateReservationScreenState
         Text('시설', style: Theme.of(context).textTheme.labelLarge),
         const SizedBox(height: 8),
         DropdownButtonFormField<int>(
-          value: _facilityId,
+          initialValue: _facilityId,
           items: facilities
               .map((f) => DropdownMenuItem(
                     value: f.id,

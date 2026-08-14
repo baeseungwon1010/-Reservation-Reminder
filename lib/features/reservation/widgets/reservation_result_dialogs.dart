@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../application/reservation_service.dart';
 import '../../../core/utils/formatting.dart';
 import '../../../domain/models/schedule_spec.dart';
 import '../../../domain/services/conflict_validator.dart';

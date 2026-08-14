@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/database/database.dart';
+// AppDatabase 만 노출한다. database.dart 가 재노출하는 Drift 생성 데이터 클래스
+// (Facility/Rule/Reservation/Schedule)와 도메인 모델의 이름 충돌을 피하기 위함.
+import '../data/database/database.dart' show AppDatabase;
 import '../data/repositories/facility_repository.dart';
 import '../data/repositories/reservation_repository.dart';
 import '../data/repositories/rule_repository.dart';

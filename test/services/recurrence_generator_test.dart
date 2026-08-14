@@ -27,7 +27,7 @@ void main() {
       mode: RecurrenceMode.weekdays,
       start: DateTime(2026, 9, 1),
       end: DateTime(2026, 10, 1),
-      weekdays: {DateTime.monday, DateTime.wednesday},
+      weekdays: const {DateTime.monday, DateTime.wednesday},
     ));
     // 2026-09-01 은 화요일. 첫 월요일은 09-07.
     expect(dates.first, DateTime(2026, 9, 2)); // 수
@@ -53,7 +53,7 @@ void main() {
         mode: RecurrenceMode.weekdays,
         start: DateTime(2026, 9, 1),
         end: DateTime(2026, 10, 1),
-        weekdays: {},
+        weekdays: const {},
       )),
       throwsArgumentError,
     );

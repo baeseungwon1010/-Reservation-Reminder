@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers.dart';
-import '../../domain/models/facility.dart';
 import 'facility_edit_screen.dart';
 
 /// 시설 관리(계획서 4장). 추가/수정/비활성화.

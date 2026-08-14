@@ -1,5 +1,3 @@
-import 'package:drift/drift.dart';
-
 import '../../domain/models/facility.dart';
 import '../database/database.dart' as db;
 import 'mappers.dart';

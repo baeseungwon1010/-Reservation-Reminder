@@ -15,6 +15,13 @@ import 'tables/reservations.dart';
 import 'tables/rules.dart';
 import 'tables/schedules.dart';
 
+// 저장소에서 `database.dart as db` 로 접근할 때 DAO 타입도 함께 보이도록 재노출.
+// (export 지시자는 part 지시자보다 앞에 와야 한다.)
+export 'daos/facility_dao.dart';
+export 'daos/rule_dao.dart';
+export 'daos/reservation_dao.dart';
+export 'daos/schedule_dao.dart';
+
 part 'database.g.dart';
 
 /// 앱 로컬 데이터베이스(SQLite + Drift). 서버 없음, local-first.
