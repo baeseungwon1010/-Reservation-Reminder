@@ -5,12 +5,11 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../application/providers.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/date_utils.dart';
-import '../../core/utils/formatting.dart';
+import '../../domain/models/calendar_marker.dart';
 import '../../domain/models/facility.dart';
 import '../../domain/models/reservation.dart';
 import '../facility/facility_list_screen.dart';
 import '../reservation/create_reservation_screen.dart';
-import '../reservation/create_recurring_screen.dart';
 import '../settings/settings_screen.dart';
 import 'day_reservations_list.dart';
 
@@ -23,21 +22,30 @@ class CalendarScreen extends ConsumerWidget {
     final focusedMonth = ref.watch(focusedMonthProvider);
     final selectedDay = ref.watch(selectedDayProvider);
     final reservationsAsync = ref.watch(monthReservationsProvider);
+    final markersAsync = ref.watch(monthMarkersProvider);
     final facilitiesAsync = ref.watch(facilitiesProvider);
 
     final facilitiesById = <int, Facility>{
       for (final f in facilitiesAsync.value ?? const <Facility>[]) f.id: f,
     };
 
+    // 사용일 목록(달력 하단 리스트용)
     final reservations = reservationsAsync.value ?? const <Reservation>[];
-    final byDay = <DateTime, List<Reservation>>{};
+    final resByDay = <DateTime, List<Reservation>>{};
     for (final r in reservations) {
-      final key = AppDate.dateOnly(r.usageDate);
-      byDay.putIfAbsent(key, () => []).add(r);
+      resByDay.putIfAbsent(AppDate.dateOnly(r.usageDate), () => []).add(r);
     }
+    List<Reservation> reservationsOf(DateTime d) =>
+        resByDay[AppDate.dateOnly(d)] ?? const [];
 
-    List<Reservation> eventsOf(DateTime day) =>
-        byDay[AppDate.dateOnly(day)] ?? const [];
+    // 마커: 예약일 + 사용일(구분)
+    final markers = markersAsync.value ?? const <CalendarMarker>[];
+    final markersByDay = <DateTime, List<CalendarMarker>>{};
+    for (final m in markers) {
+      markersByDay.putIfAbsent(AppDate.dateOnly(m.date), () => []).add(m);
+    }
+    List<CalendarMarker> markersOf(DateTime d) =>
+        markersByDay[AppDate.dateOnly(d)] ?? const [];
 
     return Scaffold(
       appBar: AppBar(
@@ -63,20 +71,21 @@ class CalendarScreen extends ConsumerWidget {
         children: [
           Card(
             margin: const EdgeInsets.all(12),
-            child: TableCalendar<Reservation>(
+            child: TableCalendar<CalendarMarker>(
               locale: 'ko_KR',
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2100, 12, 31),
               focusedDay: _clampFocused(focusedMonth, selectedDay),
               currentDay: DateTime.now(),
               selectedDayPredicate: (d) => isSameDay(d, selectedDay),
-              eventLoader: eventsOf,
+              eventLoader: markersOf,
               startingDayOfWeek: StartingDayOfWeek.sunday,
               availableCalendarFormats: const {CalendarFormat.month: '월'},
               headerStyle: const HeaderStyle(
                 formatButtonVisible: false,
                 titleCentered: true,
               ),
+              onHeaderTapped: (_) => _pickYearMonth(context, ref, focusedMonth),
               onDaySelected: (selected, focused) {
                 ref.read(selectedDayProvider.notifier).state =
                     AppDate.dateOnly(selected);
@@ -87,26 +96,15 @@ class CalendarScreen extends ConsumerWidget {
                 ref.read(focusedMonthProvider.notifier).state =
                     DateTime(focused.year, focused.month);
               },
-              calendarBuilders: CalendarBuilders<Reservation>(
-                markerBuilder: (context, day, events) {
-                  if (events.isEmpty) return null;
+              calendarBuilders: CalendarBuilders<CalendarMarker>(
+                markerBuilder: (context, day, dayMarkers) {
+                  if (dayMarkers.isEmpty) return null;
                   return Padding(
                     padding: const EdgeInsets.only(top: 34),
                     child: Wrap(
-                      spacing: 2,
+                      spacing: 3,
                       alignment: WrapAlignment.center,
-                      children: events.take(4).map((r) {
-                        final color = facilitiesById[r.facilityId]?.color ??
-                            AppConstants.defaultAuditoriumColor;
-                        return Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: Color(color),
-                            shape: BoxShape.circle,
-                          ),
-                        );
-                      }).toList(),
+                      children: dayMarkers.take(4).map(_dot).toList(),
                     ),
                   );
                 },
@@ -116,22 +114,39 @@ class CalendarScreen extends ConsumerWidget {
           Expanded(
             child: DayReservationsList(
               day: selectedDay,
-              reservations: eventsOf(selectedDay),
+              reservations: reservationsOf(selectedDay),
               facilitiesById: facilitiesById,
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddSheet(context, ref, selectedDay),
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => CreateReservationScreen(initialDate: selectedDay),
+          ),
+        ),
         icon: const Icon(Icons.add),
         label: const Text('일정 추가'),
       ),
     );
   }
 
+  /// 사용일 = 꽉 찬 점, 예약(해야 하는)일 = 테두리만 있는 점(#6).
+  Widget _dot(CalendarMarker m) {
+    final color = Color(m.facilityColor);
+    return Container(
+      width: 7,
+      height: 7,
+      decoration: BoxDecoration(
+        color: m.isUsage ? color : Colors.transparent,
+        shape: BoxShape.circle,
+        border: Border.all(color: color, width: 1.5),
+      ),
+    );
+  }
+
   DateTime _clampFocused(DateTime focusedMonth, DateTime selectedDay) {
-    // 선택일이 표시 월에 속하면 선택일을, 아니면 그 달 1일을 focus.
     if (selectedDay.year == focusedMonth.year &&
         selectedDay.month == focusedMonth.month) {
       return selectedDay;
@@ -139,43 +154,92 @@ class CalendarScreen extends ConsumerWidget {
     return focusedMonth;
   }
 
-  void _showAddSheet(BuildContext context, WidgetRef ref, DateTime day) {
-    showModalBottomSheet<void>(
+  /// 헤더(예: 2026년 9월) 탭 → 연/월 선택(#7).
+  Future<void> _pickYearMonth(
+    BuildContext context,
+    WidgetRef ref,
+    DateTime current,
+  ) async {
+    final picked = await showDialog<DateTime>(
       context: context,
-      showDragHandle: true,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.event_available),
-              title: const Text('단일 일정'),
-              subtitle: Text('${Fmt.mdWeekday(day)} 사용 일정 등록'),
-              onTap: () {
-                Navigator.pop(ctx);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => CreateReservationScreen(initialDate: day),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.repeat),
-              title: const Text('반복 일정'),
-              subtitle: const Text('N일마다 / 특정 요일로 여러 일정 생성'),
-              onTap: () {
-                Navigator.pop(ctx);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => CreateRecurringScreen(initialDate: day),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+      builder: (_) => _YearMonthPickerDialog(initial: current),
+    );
+    if (picked != null) {
+      ref.read(focusedMonthProvider.notifier).state =
+          DateTime(picked.year, picked.month);
+    }
+  }
+}
+
+/// 연도 + 월을 고르는 간단한 다이얼로그(#7).
+class _YearMonthPickerDialog extends StatefulWidget {
+  const _YearMonthPickerDialog({required this.initial});
+  final DateTime initial;
+
+  @override
+  State<_YearMonthPickerDialog> createState() => _YearMonthPickerDialogState();
+}
+
+class _YearMonthPickerDialogState extends State<_YearMonthPickerDialog> {
+  late int _year;
+  late int _month;
+
+  @override
+  void initState() {
+    super.initState();
+    _year = widget.initial.year;
+    _month = widget.initial.month;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('연도 · 월 선택'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: () => setState(() => _year--),
+              ),
+              Text('$_year년',
+                  style: Theme.of(context).textTheme.titleLarge),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: () => setState(() => _year++),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            children: [
+              for (var m = 1; m <= 12; m++)
+                ChoiceChip(
+                  label: Text('$m월'),
+                  selected: _month == m,
+                  onSelected: (_) => setState(() => _month = m),
+                ),
+            ],
+          ),
+        ],
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('취소'),
+        ),
+        FilledButton(
+          onPressed: () =>
+              Navigator.pop(context, DateTime(_year, _month)),
+          child: const Text('이동'),
+        ),
+      ],
     );
   }
 }

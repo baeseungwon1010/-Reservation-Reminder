@@ -68,24 +68,15 @@ class AppDatabase extends _$AppDatabase {
         updatedAt: now,
       ),
     );
-    await batch((b) {
-      b.insertAll(rules, [
-        RulesCompanion.insert(
-          facilityId: auditoriumId,
-          title: '예약',
-          offset: 7,
-          createdAt: now,
-          updatedAt: now,
-        ),
-        RulesCompanion.insert(
-          facilityId: auditoriumId,
-          title: '예약 확인',
-          offset: 3,
-          createdAt: now,
-          updatedAt: now,
-        ),
-      ]);
-    });
+    await into(rules).insert(
+      RulesCompanion.insert(
+        facilityId: auditoriumId,
+        title: AppConstants.defaultReservationRuleTitle,
+        offset: 7,
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
 
     final classroomId = await into(facilities).insert(
       FacilitiesCompanion.insert(
@@ -98,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
     await into(rules).insert(
       RulesCompanion.insert(
         facilityId: classroomId,
-        title: '예약',
+        title: AppConstants.defaultReservationRuleTitle,
         offset: 3,
         createdAt: now,
         updatedAt: now,

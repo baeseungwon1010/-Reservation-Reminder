@@ -6,6 +6,7 @@ import '../data/database/database.dart' show AppDatabase;
 import '../data/repositories/facility_repository.dart';
 import '../data/repositories/reservation_repository.dart';
 import '../data/repositories/rule_repository.dart';
+import '../domain/models/calendar_marker.dart';
 import '../domain/models/facility.dart';
 import '../domain/models/reservation.dart';
 import '../domain/models/rule.dart';
@@ -96,6 +97,14 @@ final monthReservationsProvider =
   return ref
       .watch(reservationRepositoryProvider)
       .watchForMonth(month.year, month.month);
+});
+
+/// 표시 중인 월의 달력 마커(예약일 + 사용일).
+final monthMarkersProvider = StreamProvider<List<CalendarMarker>>((ref) {
+  final month = ref.watch(focusedMonthProvider);
+  return ref
+      .watch(reservationRepositoryProvider)
+      .watchMarkersForMonth(month.year, month.month);
 });
 
 /// 특정 예약의 스케줄 목록.

@@ -26,9 +26,16 @@ class AppConstants {
     0xFF3949AB,
   ];
 
-  /// 자동 생성 스케줄 시간(자정 고정).
-  static const int autoScheduleHour = 0;
+  /// 자동 생성 예약 스케줄의 기본 시간(22:00). 어디까지나 기본값이며
+  /// 등록 화면에서 각 스케줄의 시간을 개별 수정할 수 있다.
+  static const int autoScheduleHour = 22;
   static const int autoScheduleMinute = 0;
+
+  /// 신규 시설을 추가할 때 부여되는 기본 "예약" 규칙의 일수(2주 전).
+  static const int defaultReservationOffsetDays = 14;
+
+  /// 기본 예약 규칙 제목.
+  static const String defaultReservationRuleTitle = '예약';
 
   /// 반복 생성 시 안전 상한(무한 루프 방지).
   static const int maxRecurrenceCount = 366;

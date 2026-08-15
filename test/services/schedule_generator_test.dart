@@ -55,14 +55,14 @@ void main() {
     );
 
     final past = result.specs
-        .firstWhere((s) => s.date == DateTime(2026, 9, 13));
+        .firstWhere((s) => s.date == DateTime(2026, 9, 13, 22));
     expect(past.notificationEnabled, isFalse); // 지나서 알림 off
     expect(result.hasPast, isTrue);
     expect(result.pastSpecs.length, 1);
     expect(result.pastSpecs.single.title, '예약');
 
     final upcoming = result.specs
-        .firstWhere((s) => s.date == DateTime(2026, 9, 17));
+        .firstWhere((s) => s.date == DateTime(2026, 9, 17, 22));
     expect(upcoming.notificationEnabled, isTrue);
   });
 

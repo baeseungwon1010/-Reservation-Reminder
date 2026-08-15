@@ -7,6 +7,7 @@ import '../../domain/models/enums.dart';
 import '../../domain/models/facility.dart';
 import '../../domain/models/reservation.dart';
 import '../../domain/models/schedule.dart';
+import '../common/schedule_visuals.dart';
 import 'widgets/custom_schedule_dialog.dart';
 
 /// 일정 상세: 사용 일정 + 예약 스케줄 목록(계획서 4·5.2·6장).
@@ -206,8 +207,16 @@ class _ScheduleList extends ConsumerWidget {
         final s = schedules[i];
         final status = s.statusAt(now);
         final isUsage = s.source == ScheduleSource.usage;
+        final done = status == ScheduleStatus.done;
         return ListTile(
-          leading: _statusIcon(context, status),
+          leading: Icon(
+            ScheduleVisuals.icon(s.source),
+            color: done
+                ? Theme.of(context).colorScheme.outline
+                : (isUsage
+                    ? Theme.of(context).colorScheme.tertiary
+                    : Theme.of(context).colorScheme.primary),
+          ),
           title: Text(s.title),
           subtitle: Text(
             '${Fmt.dateTime(s.date)} · ${status.label}'
@@ -232,12 +241,4 @@ class _ScheduleList extends ConsumerWidget {
     );
   }
 
-  Widget _statusIcon(BuildContext context, ScheduleStatus status) {
-    if (status == ScheduleStatus.done) {
-      return Icon(Icons.check_circle,
-          color: Theme.of(context).colorScheme.outline);
-    }
-    return Icon(Icons.schedule,
-        color: Theme.of(context).colorScheme.primary);
-  }
 }

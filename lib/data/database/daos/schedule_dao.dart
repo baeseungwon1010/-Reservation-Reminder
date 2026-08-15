@@ -1,15 +1,50 @@
 import 'package:drift/drift.dart';
 
+import '../../../domain/models/calendar_marker.dart';
+import '../../../domain/models/enums.dart';
+import '../tables/facilities.dart' show Facilities;
 import '../database.dart';
 import '../tables/reservations.dart';
 import '../tables/schedules.dart';
 
 part 'schedule_dao.g.dart';
 
-@DriftAccessor(tables: [Schedules, Reservations])
+@DriftAccessor(tables: [Schedules, Reservations, Facilities])
 class ScheduleDao extends DatabaseAccessor<AppDatabase>
     with _$ScheduleDaoMixin {
   ScheduleDao(super.db);
+
+  /// 특정 월에 걸치는 모든 스케줄을 시설 색상과 함께 조회한다(달력 마커용, #6).
+  /// 예약해야 하는 날짜와 사용일이 함께 포함된다.
+  Stream<List<CalendarMarker>> watchMarkersForMonth(int year, int month) {
+    final start = DateTime(year, month);
+    final end = DateTime(year, month + 1);
+    final query = select(schedules).join([
+      innerJoin(
+        reservations,
+        reservations.id.equalsExp(schedules.reservationId),
+      ),
+      innerJoin(
+        facilities,
+        facilities.id.equalsExp(reservations.facilityId),
+      ),
+    ])
+      ..where(schedules.date.isBiggerOrEqualValue(start) &
+          schedules.date.isSmallerThanValue(end));
+
+    return query.watch().map((rows) {
+      return rows.map((row) {
+        final s = row.readTable(schedules);
+        final f = row.readTable(facilities);
+        return CalendarMarker(
+          date: s.date,
+          facilityId: f.id,
+          facilityColor: f.color,
+          source: ScheduleSource.fromName(s.source),
+        );
+      }).toList();
+    });
+  }
 
   Future<List<Schedule>> getForReservation(int reservationId) =>
       (select(schedules)

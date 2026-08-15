@@ -42,9 +42,13 @@ class ReservationService {
   final Uuid _uuid;
 
   /// 단일 일정 등록. 충돌이 있으면 저장하지 않고 충돌 정보를 담아 반환한다.
+  ///
+  /// [specs] 를 주면 그 스케줄 목록(규칙+사용자지정, 시간 편집 반영본)을 그대로 저장한다.
+  /// 주지 않으면 시설 규칙으로부터 자동 생성한다.
   Future<CreateResult> createSingle({
     required int facilityId,
     required DateTime usageDate,
+    List<ScheduleSpec>? specs,
     List<ScheduleSpec> customSpecs = const [],
   }) async {
     final now = DateTime.now();
@@ -61,12 +65,13 @@ class ReservationService {
       return CreateResult.blocked([conflict]);
     }
 
-    // 2) 규칙 적용 + 스케줄 생성.
-    final rules = await _rules.getEnabledForFacility(facilityId);
+    // 2) 스케줄 생성. specs 가 주어지면 규칙 재계산 없이 그대로 사용한다.
+    final rules =
+        specs == null ? await _rules.getEnabledForFacility(facilityId) : null;
     final gen = _scheduleGen.generate(
       usageDate: day,
-      rules: rules,
-      customSpecs: customSpecs,
+      rules: rules ?? const [],
+      customSpecs: specs ?? customSpecs,
       now: now,
     );
 

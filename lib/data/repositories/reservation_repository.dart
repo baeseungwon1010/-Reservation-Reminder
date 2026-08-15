@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../domain/models/calendar_marker.dart';
 import '../../domain/models/reservation.dart';
 import '../../domain/models/schedule.dart';
 import '../../domain/models/schedule_spec.dart';
@@ -30,6 +31,10 @@ class ReservationRepository {
   Stream<List<Reservation>> watchForMonth(int year, int month) => _reservationDao
       .watchForMonth(year, month)
       .map((rows) => rows.map(Mappers.reservation).toList());
+
+  /// 달력 마커: 해당 월의 모든 스케줄(예약일 + 사용일)을 시설 색상과 함께.
+  Stream<List<CalendarMarker>> watchMarkersForMonth(int year, int month) =>
+      _scheduleDao.watchMarkersForMonth(year, month);
 
   Future<List<Schedule>> schedulesFor(int reservationId) async =>
       (await _scheduleDao.getForReservation(reservationId))

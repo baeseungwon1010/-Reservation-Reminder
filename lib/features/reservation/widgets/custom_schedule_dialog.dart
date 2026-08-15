@@ -4,6 +4,7 @@ import '../../../core/utils/date_utils.dart';
 import '../../../core/utils/formatting.dart';
 import '../../../domain/models/enums.dart';
 import '../../../domain/models/schedule_spec.dart';
+import '../../common/time_wheel_picker.dart';
 
 /// 사용자 지정 추가 스케줄 입력 다이얼로그(계획서 8.3).
 /// 제목/날짜/시간/알림 여부를 입력받아 ScheduleSpec 을 돌려준다.
@@ -61,10 +62,7 @@ class _CustomScheduleDialogState extends State<_CustomScheduleDialog> {
             TextField(
               controller: _title,
               autofocus: true,
-              decoration: const InputDecoration(
-                labelText: '제목',
-                hintText: '예: 준비물 확인',
-              ),
+              decoration: const InputDecoration(labelText: '제목'),
             ),
             const SizedBox(height: 12),
             Row(
@@ -92,10 +90,8 @@ class _CustomScheduleDialogState extends State<_CustomScheduleDialog> {
                     icon: const Icon(Icons.schedule, size: 18),
                     label: Text(_time.format(context)),
                     onPressed: () async {
-                      final picked = await showTimePicker(
-                        context: context,
-                        initialTime: _time,
-                      );
+                      final picked =
+                          await pickTimeWheel(context, initial: _time);
                       if (picked != null) setState(() => _time = picked);
                     },
                   ),

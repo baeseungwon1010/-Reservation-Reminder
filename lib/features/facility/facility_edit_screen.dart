@@ -24,6 +24,9 @@ class _FacilityEditScreenState extends ConsumerState<FacilityEditScreen> {
   late final TextEditingController _name;
   late int _color;
 
+  /// 신규 시설 추가 시 함께 만들 기본 "예약" 규칙의 일수(2주 전 기본).
+  int _defaultOffset = AppConstants.defaultReservationOffsetDays;
+
   @override
   void initState() {
     super.initState();
@@ -91,13 +94,37 @@ class _FacilityEditScreenState extends ConsumerState<FacilityEditScreen> {
           if (widget.isEditing) ...[
             const Divider(),
             _RulesSection(facilityId: widget.facility!.id),
-          ] else
-            const Card(
+          ] else ...[
+            Text('기본 예약 알림', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            Card(
               child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Text('시설을 저장한 뒤 예약 규칙(N일 전)을 추가할 수 있습니다.'),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: Row(
+                  children: [
+                    const Expanded(child: Text('사용일 기준')),
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle_outline),
+                      onPressed: _defaultOffset > 0
+                          ? () => setState(() => _defaultOffset--)
+                          : null,
+                    ),
+                    Text('$_defaultOffset일 전',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_outline),
+                      onPressed: () => setState(() => _defaultOffset++),
+                    ),
+                  ],
+                ),
               ),
             ),
+            const SizedBox(height: 8),
+            Text(
+              '저장하면 위 조건의 "예약" 규칙이 자동 생성됩니다. 이후 규칙을 추가/수정할 수 있습니다.',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
         ],
       ),
     );
@@ -120,7 +147,13 @@ class _FacilityEditScreenState extends ConsumerState<FacilityEditScreen> {
         ),
       );
     } else {
-      await repo.create(name: name, color: _color);
+      final id = await repo.create(name: name, color: _color);
+      // 신규 시설에 기본 "예약" 규칙 자동 생성(#4).
+      await ref.read(ruleRepositoryProvider).create(
+            facilityId: id,
+            title: AppConstants.defaultReservationRuleTitle,
+            offset: _defaultOffset,
+          );
     }
     if (mounted) Navigator.pop(context);
   }

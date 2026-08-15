@@ -34,13 +34,13 @@ void main() {
     );
 
     expect(specs.length, 2);
-    // 날짜 오름차순 정렬.
-    expect(specs[0].date, DateTime(2026, 9, 13));
+    // 날짜 오름차순 정렬. 기본 시간은 22:00.
+    expect(specs[0].date, DateTime(2026, 9, 13, 22));
     expect(specs[0].title, '예약');
-    expect(specs[1].date, DateTime(2026, 9, 17));
+    expect(specs[1].date, DateTime(2026, 9, 17, 22));
     expect(specs[1].title, '예약 확인');
-    // 자정 고정.
-    expect(specs[0].date.hour, 0);
+    // 기본 시간 22:00.
+    expect(specs[0].date.hour, 22);
     expect(specs[0].date.minute, 0);
     // 규칙 스케줄은 알림 기본 활성.
     expect(specs.every((s) => s.notificationEnabled), isTrue);
