@@ -32,21 +32,6 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.sync),
-            title: const Text('알림 다시 맞추기'),
-            subtitle: const Text('저장된 일정에 맞춰 알림을 다시 등록해요.'),
-            onTap: () async {
-              await ref
-                  .read(reservationServiceProvider)
-                  .syncNotificationsOnStartup();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('알림을 다시 맞췄어요.')),
-                );
-              }
-            },
-          ),
           const Divider(),
           const _SectionHeader('정보'),
           const ListTile(
