@@ -42,7 +42,7 @@ class SettingsScreen extends ConsumerWidget {
                   .syncNotificationsOnStartup();
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('알림을 동기화했습니다.')),
+                  const SnackBar(content: Text('알림을 다시 맞췄어요.')),
                 );
               }
             },
@@ -52,12 +52,12 @@ class SettingsScreen extends ConsumerWidget {
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text(AppConstants.appName),
-            subtitle: Text('이 기기에만 저장되는 개인용 앱 · v1.0.0'),
+            subtitle: Text('v1.0.0'),
           ),
           const ListTile(
             leading: Icon(Icons.shield_outlined),
-            title: Text('데이터는 내 폰에만'),
-            subtitle: Text('모든 정보는 이 폰에만 저장돼요. 서버나 계정은 쓰지 않아요.'),
+            title: Text('데이터 저장'),
+            subtitle: Text('해당 앱은 동기화가 적용되지 않으며 기기 내부에만 저장됩니다.'),
           ),
         ],
       ),

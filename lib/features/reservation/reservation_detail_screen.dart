@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers.dart';
+import '../../core/errors/app_error.dart';
 import '../../core/utils/formatting.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/models/facility.dart';
@@ -50,7 +51,7 @@ class ReservationDetailScreen extends ConsumerWidget {
       ),
       body: reservationAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('오류: $e')),
+        error: (e, _) => AppErrorView(e),
         data: (reservation) {
           if (reservation == null) {
             return const Center(child: Text('삭제된 일정입니다.'));
@@ -69,7 +70,7 @@ class ReservationDetailScreen extends ConsumerWidget {
                 child: schedulesAsync.when(
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
-                  error: (e, _) => Center(child: Text('오류: $e')),
+                  error: (e, _) => AppErrorView(e),
                   data: (schedules) =>
                       _ScheduleList(reservationId: reservationId, schedules: schedules),
                 ),
@@ -84,7 +85,7 @@ class ReservationDetailScreen extends ConsumerWidget {
             : FloatingActionButton.extended(
                 onPressed: () => _addCustom(context, ref, r),
                 icon: const Icon(Icons.add),
-                label: const Text('직접 추가'),
+                label: const Text('일정 추가'),
               ),
         orElse: () => null,
       ),
@@ -120,7 +121,7 @@ class ReservationDetailScreen extends ConsumerWidget {
     } else if (action == 'deleteBatch' && r.batchId != null) {
       final ok = await _confirm(
         context,
-        '반복으로 생성된 그룹 전체를 삭제할까요?',
+        '반복 일정을 삭제할까요?',
       );
       if (ok) {
         await service.deleteBatch(r.batchId!);

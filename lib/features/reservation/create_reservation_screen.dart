@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers.dart';
+import '../../core/errors/app_error.dart';
 import '../../core/utils/date_utils.dart';
 import '../../core/utils/formatting.dart';
 import '../../domain/models/enums.dart';
@@ -68,7 +69,7 @@ class _CreateReservationScreenState
       appBar: AppBar(title: const Text('일정 추가')),
       body: facilitiesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('시설을 불러오지 못했습니다: $e')),
+        error: (e, _) => AppErrorView(e),
         data: (facilities) {
           if (facilities.isEmpty) {
             return const Center(
@@ -118,7 +119,6 @@ class _CreateReservationScreenState
         Card(
           child: SwitchListTile(
             title: const Text('반복 일정'),
-            subtitle: const Text('여러 날짜를 한 번에 등록해요'),
             value: _recurring,
             onChanged: (v) => setState(() => _recurring = v),
           ),
@@ -162,20 +162,13 @@ class _CreateReservationScreenState
           const Spacer(),
           TextButton.icon(
             icon: const Icon(Icons.add, size: 18),
-            label: const Text('직접 추가'),
+            label: const Text('일정 추가'),
             onPressed: _addCustom,
           ),
         ],
       ),
       const SizedBox(height: 8),
-      if (_specs.isEmpty)
-        const Card(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('자동으로 잡힌 예약 알림이 없어요. "직접 추가"로 넣거나 시설에서 규칙을 설정하세요.'),
-          ),
-        )
-      else
+      if (_specs.isNotEmpty)
         Card(
           child: Column(
             children: [
@@ -448,7 +441,7 @@ class _PastBanner extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              '이미 지난 스케줄 $count건은 저장되지만 알림이 등록되지 않습니다.',
+              '이미 지난 일정 $count건은 저장되지만 알림이 오지 않아요.',
               style: TextStyle(color: scheme.onErrorContainer),
             ),
           ),

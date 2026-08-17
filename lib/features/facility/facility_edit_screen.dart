@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/errors/app_error.dart';
 import '../../domain/models/facility.dart';
 import '../../domain/models/rule.dart';
 import 'widgets/rule_dialog.dart';
@@ -184,7 +185,7 @@ class _RulesSection extends ConsumerWidget {
         ),
         rulesAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text('오류: $e'),
+          error: (e, _) => AppErrorView(e),
           data: (rules) {
             if (rules.isEmpty) {
               return const Padding(

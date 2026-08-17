@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers.dart';
+import '../../core/errors/app_error.dart';
 import 'facility_edit_screen.dart';
 
 /// 시설 관리(계획서 4장). 추가/수정/비활성화.
@@ -16,7 +17,7 @@ class FacilityListScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('시설 관리')),
       body: facilitiesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('오류: $e')),
+        error: (e, _) => AppErrorView(e),
         data: (facilities) {
           if (facilities.isEmpty) {
             return const Center(child: Text('아직 시설이 없어요.'));
