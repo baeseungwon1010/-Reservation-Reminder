@@ -19,7 +19,7 @@ class FacilityListScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text('오류: $e')),
         data: (facilities) {
           if (facilities.isEmpty) {
-            return const Center(child: Text('시설이 없습니다.'));
+            return const Center(child: Text('아직 시설이 없어요.'));
           }
           return ListView.separated(
             padding: const EdgeInsets.symmetric(vertical: 8),

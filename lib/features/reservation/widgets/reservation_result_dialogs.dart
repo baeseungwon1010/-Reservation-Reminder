@@ -18,7 +18,7 @@ Future<void> showConflictDialog(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('해당 시설에 이미 등록된 일정이 있어 추가할 수 없습니다.'),
+          const Text('이 시설에 같은 날 일정이 이미 있어서 추가할 수 없어요.'),
           const SizedBox(height: 12),
           for (final c in conflicts)
             Padding(
@@ -51,7 +51,7 @@ Future<void> showPastWarningDialog(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('아래 스케줄은 이미 지나 알림이 등록되지 않았습니다.\n일정 자체는 정상 저장됩니다.'),
+          const Text('아래 일정은 이미 지나서 알림이 등록되지 않았어요.\n일정은 그대로 저장돼요.'),
           const SizedBox(height: 12),
           for (final s in pastSpecs)
             Padding(

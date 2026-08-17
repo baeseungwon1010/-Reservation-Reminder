@@ -121,7 +121,7 @@ class _FacilityEditScreenState extends ConsumerState<FacilityEditScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '저장하면 위 조건의 "예약" 규칙이 자동 생성됩니다. 이후 규칙을 추가/수정할 수 있습니다.',
+              '저장하면 위 조건으로 "예약" 알림이 자동으로 만들어져요. 나중에 규칙을 더하거나 바꿀 수 있어요.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
@@ -189,7 +189,7 @@ class _RulesSection extends ConsumerWidget {
             if (rules.isEmpty) {
               return const Padding(
                 padding: EdgeInsets.symmetric(vertical: 12),
-                child: Text('규칙이 없습니다. "규칙 추가"로 N일 전 규칙을 만드세요.'),
+                child: Text('아직 규칙이 없어요. "규칙 추가"로 "사용일 며칠 전" 알림을 만드세요.'),
               );
             }
             return Column(

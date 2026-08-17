@@ -35,10 +35,15 @@ class ScheduleDao extends DatabaseAccessor<AppDatabase>
     return query.watch().map((rows) {
       return rows.map((row) {
         final s = row.readTable(schedules);
+        final r = row.readTable(reservations);
         final f = row.readTable(facilities);
         return CalendarMarker(
           date: s.date,
+          reservationId: r.id,
+          usageDate: r.usageDate,
+          title: s.title,
           facilityId: f.id,
+          facilityName: f.name,
           facilityColor: f.color,
           source: ScheduleSource.fromName(s.source),
         );

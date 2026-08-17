@@ -84,7 +84,7 @@ class ReservationDetailScreen extends ConsumerWidget {
             : FloatingActionButton.extended(
                 onPressed: () => _addCustom(context, ref, r),
                 icon: const Icon(Icons.add),
-                label: const Text('추가 스케줄'),
+                label: const Text('직접 추가'),
               ),
         orElse: () => null,
       ),
@@ -196,7 +196,7 @@ class _ScheduleList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (schedules.isEmpty) {
-      return const Center(child: Text('스케줄이 없습니다.'));
+      return const Center(child: Text('일정이 없어요.'));
     }
     final now = DateTime.now();
     return ListView.separated(

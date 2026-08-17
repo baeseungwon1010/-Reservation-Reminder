@@ -118,7 +118,7 @@ class _CreateReservationScreenState
         Card(
           child: SwitchListTile(
             title: const Text('반복 일정'),
-            subtitle: const Text('여러 사용일을 한 번에 생성'),
+            subtitle: const Text('여러 날짜를 한 번에 등록해요'),
             value: _recurring,
             onChanged: (v) => setState(() => _recurring = v),
           ),
@@ -158,11 +158,11 @@ class _CreateReservationScreenState
       const SizedBox(height: 20),
       Row(
         children: [
-          Text('생성될 예약 스케줄', style: Theme.of(context).textTheme.labelLarge),
+          Text('생성될 예약 일정', style: Theme.of(context).textTheme.labelLarge),
           const Spacer(),
           TextButton.icon(
             icon: const Icon(Icons.add, size: 18),
-            label: const Text('추가 스케줄'),
+            label: const Text('직접 추가'),
             onPressed: _addCustom,
           ),
         ],
@@ -172,7 +172,7 @@ class _CreateReservationScreenState
         const Card(
           child: Padding(
             padding: EdgeInsets.all(16),
-            child: Text('규칙이 없습니다. "추가 스케줄"로 직접 넣거나 시설 규칙을 설정하세요.'),
+            child: Text('자동으로 잡힌 예약 알림이 없어요. "직접 추가"로 넣거나 시설에서 규칙을 설정하세요.'),
           ),
         )
       else
@@ -349,7 +349,7 @@ class _CreateReservationScreenState
       ),
       const SizedBox(height: 8),
       Text(
-        '반복 일정은 각 사용일에 시설 규칙이 자동 적용됩니다.',
+        '만들어진 날짜마다 시설의 예약 알림이 자동으로 잡혀요.',
         style: Theme.of(context).textTheme.bodySmall,
       ),
     ];

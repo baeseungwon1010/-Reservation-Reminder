@@ -54,7 +54,7 @@ class _CustomScheduleDialogState extends State<_CustomScheduleDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('추가 스케줄'),
+      title: const Text('일정 직접 추가'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,

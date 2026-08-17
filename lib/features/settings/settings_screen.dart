@@ -34,8 +34,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.sync),
-            title: const Text('알림 다시 동기화'),
-            subtitle: const Text('DB의 미래 일정과 OS 알림을 일치시킵니다.'),
+            title: const Text('알림 다시 맞추기'),
+            subtitle: const Text('저장된 일정에 맞춰 알림을 다시 등록해요.'),
             onTap: () async {
               await ref
                   .read(reservationServiceProvider)
@@ -52,12 +52,12 @@ class SettingsScreen extends ConsumerWidget {
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text(AppConstants.appName),
-            subtitle: Text('서버 없는 로컬 전용 개인 앱 · v1.0.0'),
+            subtitle: Text('이 기기에만 저장되는 개인용 앱 · v1.0.0'),
           ),
           const ListTile(
             leading: Icon(Icons.shield_outlined),
-            title: Text('데이터 저장'),
-            subtitle: Text('모든 데이터는 이 기기 안에만 저장됩니다. 서버/계정/백업 없음.'),
+            title: Text('데이터는 내 폰에만'),
+            subtitle: Text('모든 정보는 이 폰에만 저장돼요. 서버나 계정은 쓰지 않아요.'),
           ),
         ],
       ),

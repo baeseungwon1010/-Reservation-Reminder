@@ -6,8 +6,6 @@ import '../../application/providers.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/date_utils.dart';
 import '../../domain/models/calendar_marker.dart';
-import '../../domain/models/facility.dart';
-import '../../domain/models/reservation.dart';
 import '../facility/facility_list_screen.dart';
 import '../reservation/create_reservation_screen.dart';
 import '../settings/settings_screen.dart';
@@ -21,24 +19,9 @@ class CalendarScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final focusedMonth = ref.watch(focusedMonthProvider);
     final selectedDay = ref.watch(selectedDayProvider);
-    final reservationsAsync = ref.watch(monthReservationsProvider);
     final markersAsync = ref.watch(monthMarkersProvider);
-    final facilitiesAsync = ref.watch(facilitiesProvider);
 
-    final facilitiesById = <int, Facility>{
-      for (final f in facilitiesAsync.value ?? const <Facility>[]) f.id: f,
-    };
-
-    // 사용일 목록(달력 하단 리스트용)
-    final reservations = reservationsAsync.value ?? const <Reservation>[];
-    final resByDay = <DateTime, List<Reservation>>{};
-    for (final r in reservations) {
-      resByDay.putIfAbsent(AppDate.dateOnly(r.usageDate), () => []).add(r);
-    }
-    List<Reservation> reservationsOf(DateTime d) =>
-        resByDay[AppDate.dateOnly(d)] ?? const [];
-
-    // 마커: 예약일 + 사용일(구분)
+    // 마커: 예약일 + 사용일(구분). 달력 점 + 하단 목록 모두 이걸로 그린다.
     final markers = markersAsync.value ?? const <CalendarMarker>[];
     final markersByDay = <DateTime, List<CalendarMarker>>{};
     for (final m in markers) {
@@ -112,10 +95,9 @@ class CalendarScreen extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: DayReservationsList(
+            child: DayScheduleList(
               day: selectedDay,
-              reservations: reservationsOf(selectedDay),
-              facilitiesById: facilitiesById,
+              markers: markersOf(selectedDay),
             ),
           ),
         ],
@@ -132,16 +114,17 @@ class CalendarScreen extends ConsumerWidget {
     );
   }
 
-  /// 사용일 = 꽉 찬 점, 예약(해야 하는)일 = 테두리만 있는 점(#6).
+  /// 사용일 = 꽉 찬 점, 예약(해야 하는)일 = 테두리 링(안쪽 옅은 채움)으로 구분하되
+  /// 둘 다 또렷하게 보이도록 한다(#6 개선).
   Widget _dot(CalendarMarker m) {
     final color = Color(m.facilityColor);
     return Container(
-      width: 7,
-      height: 7,
+      width: 8,
+      height: 8,
       decoration: BoxDecoration(
-        color: m.isUsage ? color : Colors.transparent,
+        color: m.isUsage ? color : color.withValues(alpha: 0.28),
         shape: BoxShape.circle,
-        border: Border.all(color: color, width: 1.5),
+        border: Border.all(color: color, width: 2),
       ),
     );
   }
