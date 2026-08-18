@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 // AppDatabase 만 노출한다. database.dart 가 재노출하는 Drift 생성 데이터 클래스
 // (Facility/Rule/Reservation/Schedule)와 도메인 모델의 이름 충돌을 피하기 위함.
@@ -24,6 +25,12 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 
 final notificationManagerProvider = Provider<NotificationManager>((ref) {
   return NotificationManager();
+});
+
+/// 앱의 실제 버전(pubspec 의 version 에서 읽음). 설정 화면 표시에 사용.
+final appVersionProvider = FutureProvider<String>((ref) async {
+  final info = await PackageInfo.fromPlatform();
+  return 'v${info.version} (빌드 ${info.buildNumber})';
 });
 
 /// ---- 저장소 ----

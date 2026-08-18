@@ -1,7 +1,8 @@
 name: reservation_reminder
 description: 시설별 예약 규칙에 따라 예약 시점을 자동 계산하고 로컬 알림을 제공하는 개인용 앱.
 publish_to: "none"
-version: 1.0.0+1
+# 형식: <사용자용 버전>+<빌드번호(versionCode)>. 빌드마다 증가.
+version: 1.0.1+2
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
@@ -33,6 +34,7 @@ dependencies:
   # 기타
   intl: ^0.20.2
   uuid: ^4.4.0
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:

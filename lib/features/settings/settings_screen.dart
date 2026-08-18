@@ -34,10 +34,10 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           const _SectionHeader('정보'),
-          const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text(AppConstants.appName),
-            subtitle: Text('v1.0.0'),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text(AppConstants.appName),
+            subtitle: Text(ref.watch(appVersionProvider).value ?? '…'),
           ),
           const ListTile(
             leading: Icon(Icons.shield_outlined),
