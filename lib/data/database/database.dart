@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -48,10 +48,18 @@ class AppDatabase extends _$AppDatabase {
           // 외래키 제약 활성화(참조 무결성 + cascade 삭제).
           await customStatement('PRAGMA foreign_keys = ON');
         },
-        // v2 이후 마이그레이션은 여기서 step 단위로 추가한다(계획서 23장).
         onUpgrade: (m, from, to) async {
-          // 예:
-          // if (from < 2) { await m.addColumn(...); }
+          // v2: 기본으로 넣었던 "예약 확인" 규칙/스케줄을 정리한다.
+          // (예전 설치본에 남아있는 잔재 제거. 규칙에서 생성된 것만 삭제)
+          if (from < 2) {
+            await (delete(rules)..where((r) => r.title.equals('예약 확인')))
+                .go();
+            await (delete(schedules)
+                  ..where((s) =>
+                      s.title.equals('예약 확인') & s.source.equals('rule')))
+                .go();
+            // 삭제된 스케줄의 OS 알림은 앱 시작 시 동기화에서 자동 취소된다.
+          }
         },
       );
 

@@ -196,16 +196,19 @@ class _ScheduleList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (schedules.isEmpty) {
-      return const Center(child: Text('일정이 없어요.'));
+    // "사용" 줄은 상세 목록에서 숨긴다(상단에 이미 사용일이 표시됨). 달력의 사용일 점은 유지.
+    final visible =
+        schedules.where((s) => s.source != ScheduleSource.usage).toList();
+    if (visible.isEmpty) {
+      return const Center(child: Text('예약 일정이 없어요.'));
     }
     final now = DateTime.now();
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 96),
-      itemCount: schedules.length,
+      itemCount: visible.length,
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, i) {
-        final s = schedules[i];
+        final s = visible[i];
         final status = s.statusAt(now);
         final isUsage = s.source == ScheduleSource.usage;
         final done = status == ScheduleStatus.done;
