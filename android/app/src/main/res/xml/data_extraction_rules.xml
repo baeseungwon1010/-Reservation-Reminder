@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  기기 내부 저장 원칙(개인용 로컬 앱)에 맞춰 앱 데이터가 기기를 벗어나지 않도록
+  클라우드 백업과 기기간(D2D) 전송에서 전부 제외한다.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+    </device-transfer>
+</data-extraction-rules>
