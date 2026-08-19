@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,6 +60,15 @@ class AppDatabase extends _$AppDatabase {
                 .go();
             // 삭제된 스케줄의 OS 알림은 앱 시작 시 동기화에서 자동 취소된다.
           }
+          // v3: 강당 기본 "예약" 규칙을 7일 전 → 21일 전(3주)으로 정정.
+          if (from < 3) {
+            await (update(rules)
+                  ..where((r) => r.title.equals('예약') & r.offset.equals(7)))
+                .write(RulesCompanion(
+                  offset: const Value(21),
+                  updatedAt: Value(DateTime.now()),
+                ));
+          }
         },
       );
 
@@ -80,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
       RulesCompanion.insert(
         facilityId: auditoriumId,
         title: AppConstants.defaultReservationRuleTitle,
-        offset: 7,
+        offset: 21, // 강당: 사용일 3주 전
         createdAt: now,
         updatedAt: now,
       ),
